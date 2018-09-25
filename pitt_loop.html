@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<style>
+
+svg {
+  position: relative;
+}
+
+h1 {
+        display: flex;
+        align-items: flex-end;
+        background-color: black;
+        color: white;
+        font-size: 50px;
+        font-weight: 20px;
+        padding-left: 30px;
+        padding-top: 120px;
+        margin-bottom: 0px;
+    	}
+
+#container {		
+display: flex;
+justify-content: left;
+background-color: black;
+} 
+
+
+#map {
+  padding-left: 10px;
+  width: 1200px;
+  height: 800px;
+}
+
+
+div.buttons div {
+        color:  #919191b4;
+        flex-grow:1;
+        flex-basis: 0;
+        font-size: 20px;
+        text-decoration: underline;
+        text-align: left;
+        border-radius: 6px;
+        padding: 3px;
+        margin: 3px;
+      	}
+
+.road {
+  fill-opacity: 0;
+  stroke: #fff;
+  stroke-width: 2.5px;
+}
+
+.road:hover {
+  stroke: lightblue;
+}
+
+span {
+    background-color: black;
+    color: palegoldenrod
+}
+
+hr {
+    background-color: black;
+    display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid white;
+    margin: 0px;
+    padding: 10px; 
+}
+p {
+    background-color: black;
+    color: palegoldenrod;
+    margin: 0px;
+    padding: 0px;
+}
+
+footer {
+    padding: 80px;
+    background-color: black;
+}
+
+
+</style>
+
+<script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/topojson.v2.min.js"></script>
+<script  type="text/javascript">
+
+
+
+function ready(error, counties, route, app_counties) {
+			if (error) throw error;
+	        "use strict";
+
+        // pittsburgh
+        var city = [40.4406, -80.1059];
+
+        var map = new L.Map("map", {center: city, zoom: 12})
+        // different from m bostock think it just makes it more customizable.
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+            maxZoom: 18,
+            id: 'mapbox.dark',
+            accessToken: 'pk.eyJ1IjoiZ2lsbC0iLCJhIjoiY2o1ODlpZXUwMTlsNjMybWNnamZ6dGR1ciJ9.5_9GrnEG4jM3WLLFDCZpTQ'
+        }).addTo(map);
+
+        /* Initialize the SVG layer */
+        //time to put in the choropleth. demonstrated by  from M bostock
+        // https://bost.ocks.org/mike/leaflet/
+        // filtered_counties = filter_counties(counties);
+
+        var svg = d3.select(map.getPanes().overlayPane).append("svg"),
+        g = svg.append("g").attr("class", "leaflet-zoom-hide");
+
+        // this is where everything went wrong. 
+        var transform = d3.geoTransform({point: projectPoint});
+
+
+        path = d3.geoPath().projection(transform);
+
+        var filtered_counties = filter_counties(counties);
+        // var feature = g.selectAll(".county")
+        //     .data(filtered_counties)
+        // .enter().append("path")
+        // .attr('class', 'county');
+
+
+        // couple things went wrong here
+        // 1. depending on how you get your data lat and lng can be flipped and that hurts
+        // 2. the data needs to be an interable so putting it in a list fixes it. 
+        // 3. make sure you have the stroke
+        // 4/ you need to append path. path has a special meaning like a circle 
+        // you can seelect it like a class attribute or the type of geomtrey it is eh. 
+        var road_feature = g.selectAll(".road")
+            .data([route.geometry])
+            .enter().append("path")
+            .attr('class', 'road')
+            .attr('stroke', '#2b8cbe')
+        //update_counties(filtered_counties);
+
+        map.on("viewreset", reset);
+        reset();
+
+
+function create_button_group(button_data) {
+        d3.select(".buttons")
+            .append("div")
+            .attr("class", "story_button")
+            .selectAll("div")
+            .data(button_data)
+            .enter()
+            .append("div")
+            .text(function(d) {
+                return d;
+            })
+};
+
+function filter_counties(counties){
+            var temp_counties = counties.features
+            var FIPS = new Set();
+            var filtered_counties = [];
+
+            for (i = 0; i < app_counties.length; i++) { 
+                                var d = app_counties[i];
+                                FIPS.add(d['FIPS'])
+                                }
+            
+            for (i = 0; i < temp_counties.length; i++) { 
+                    var e = temp_counties[i];
+                    var id = e.properties.GEOID;
+                    if (FIPS.has(id)) {
+                        filtered_counties.push(e)
+                    }
+                    };
+            return filtered_counties
+  }; // end of filter counties
+
+function update_counties(filtered_counties){
+
+    svg.append("g")
+      .attr("class", "counties")
+    .selectAll("path")
+    .data(filtered_counties)
+    .enter().append("path")
+      .attr("d", path);
+
+      filtered_counties.counties.exit().remove();
+
+  };
+
+function projectPoint(x, y) {
+            var point = map.latLngToLayerPoint(new L.LatLng(y, x));
+            this.stream.point(point.x, point.y);
+        }
+
+
+function reset() {
+            var bounds = path.bounds(route),
+                topLeft = bounds[0],
+                bottomRight = bounds[1];
+
+            svg.attr("width", bottomRight[0] - topLeft[0])
+                .attr("height", bottomRight[1] - topLeft[1])
+                .style("left", topLeft[0] + "px")
+                .style("top", topLeft[1] + "px");
+
+            g.attr("transform", "translate(" + -topLeft[0] + "," + -topLeft[1] + ")");
+
+            // road.attr('d', path);
+            // feature.attr("d", path);
+            road_feature.attr("d", path);
+            //debugger;
+    }
+
+ 
+
+}; // end of ready
+
+    d3.queue()
+    .defer(d3.json, 'us_county.geojson')
+    .defer(d3.json, 'data/pitt_route.json')
+    .defer(d3.csv, "app_votes.csv")
+    .await(ready);
+</script>
+ <h1 id="banner">Pitt Loop</h1>
+ <hr>
+    <div id="container">
+        <div id="map"></div>
+        <div class="buttons">
+            <p>hello world!</p>
+        </div>
+
+        <link 
+            rel="stylesheet" 
+            href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css"
+        />
+    </div>
+        <p>boop</p>
+<footer></footer>

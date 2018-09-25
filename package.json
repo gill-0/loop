@@ -1,0 +1,14 @@
+{
+  "name": "loop",
+  "version": "1.0.0",
+  "description": "pittsburgh loop visualization",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "Andrew Gill",
+  "license": "ISC",
+  "dependencies": {
+    "@mapbox/polyline": "^1.0.0"
+  }
+}
