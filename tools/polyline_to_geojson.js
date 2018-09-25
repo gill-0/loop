@@ -22,7 +22,6 @@ var geo_route = { "type": "FeatureCollection",
 }]
 };
 
-
 fs.writeFile("./data/route.json", JSON.stringify(geo_route), function(err) {
     if(err) {
         return console.log(err);

@@ -31,18 +31,32 @@ background-color: black;
   height: 800px;
 }
 
+.buttons {
+    padding-top: 16px;
+    /* border-radius: 5px; */
+    display: flex;
+    justify-content: space-around;
+    background-color: black;
+}
 
-div.buttons div {
-        color:  #919191b4;
-        flex-grow:1;
-        flex-basis: 0;
-        font-size: 20px;
-        text-decoration: underline;
-        text-align: left;
-        border-radius: 6px;
-        padding: 3px;
-        margin: 3px;
-      	}
+.button:hover {
+    background-color: white; /* Green */
+    color: black
+}
+
+.button {
+    background-color: black; /* Green */
+    border-color: white;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    border-radius: 50%;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 2px 2px;
+    cursor: pointer;
+}
 
 .road {
   fill-opacity: 0;
@@ -90,7 +104,7 @@ footer {
 
 
 
-function ready(error, counties, route, app_counties) {
+function ready(error, route) {
 			if (error) throw error;
 	        "use strict";
 
@@ -120,12 +134,7 @@ function ready(error, counties, route, app_counties) {
 
         path = d3.geoPath().projection(transform);
 
-        var filtered_counties = filter_counties(counties);
-        // var feature = g.selectAll(".county")
-        //     .data(filtered_counties)
-        // .enter().append("path")
-        // .attr('class', 'county');
-
+        // var filtered_counties = filter_counties(counties);
 
         // couple things went wrong here
         // 1. depending on how you get your data lat and lng can be flipped and that hurts
@@ -219,23 +228,24 @@ function reset() {
 }; // end of ready
 
     d3.queue()
-    .defer(d3.json, 'us_county.geojson')
     .defer(d3.json, 'data/pitt_route.json')
-    .defer(d3.csv, "app_votes.csv")
     .await(ready);
 </script>
  <h1 id="banner">Pitt Loop</h1>
  <hr>
     <div id="container">
         <div id="map"></div>
-        <div class="buttons">
+        <div>
             <p>hello world!</p>
         </div>
-
         <link 
             rel="stylesheet" 
             href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css"
         />
     </div>
-        <p>boop</p>
+    <div class="buttons">
+        <button class="button button4">Route</button>
+        <button class="button button4">Race</button>
+        <button class="button button4">Contact</button>
+    </div>
 <footer></footer>
