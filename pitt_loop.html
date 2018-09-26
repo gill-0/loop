@@ -6,6 +6,10 @@ svg {
   position: relative;
 }
 
+div {
+    background-color: black;
+}
+
 h1 {
         display: flex;
         align-items: flex-end;
@@ -14,34 +18,34 @@ h1 {
         font-size: 50px;
         font-weight: 20px;
         padding-left: 30px;
-        padding-top: 120px;
+        padding-top: 80px;
         margin-bottom: 0px;
     	}
+#header {
+    display: flex;
+    align-items: flex-end; 
+}
 
-#container {		
-display: flex;
-justify-content: left;
-background-color: black;
+#container {	
+    display: flex;
+    justify-content: left;
+    background-color: black;
 } 
 
 
 #map {
   padding-left: 10px;
   width: 1200px;
-  height: 800px;
+  height: 600px;
 }
 
 .buttons {
+    width: 80%;
     padding-top: 16px;
     /* border-radius: 5px; */
     display: flex;
     justify-content: space-around;
     background-color: black;
-}
-
-.button:hover {
-    background-color: white; /* Green */
-    color: black
 }
 
 .button {
@@ -62,25 +66,30 @@ background-color: black;
   fill-opacity: 0;
   stroke: #fff;
   stroke-width: 2.5px;
-  stroke-dasharray: 2000;
+  /* stroke-dasharray: 2000;
   stroke-dashoffset: 2000;
-  animation: dash 5s linear;
-  animation-fill-mode: forwards;
+  /* 17.9 miles / 125mph = .1432 *60 8.59 min so under 9 min =  */
+  /* less than ride sharing and twice as fast */
+  /* animation: dash 5s linear;
+  animation-fill-mode: forwards;  */
 }
 
-@keyframes dash {
+
+/* @keyframes dash {
   to {
     stroke-dashoffset: 0;
   }
-}
+} */
 
 .road:hover {
   stroke: lightblue;
 }
 
 span {
-    background-color: black;
-    color: palegoldenrod
+    color: white;
+    margin-left: 10px;
+    margin-bottom: 4px;
+    font-size: 18px;
 }
 
 hr {
@@ -92,11 +101,12 @@ hr {
     margin: 0px;
     padding: 10px; 
 }
-p {
+div#info-panel > * {
+    margin-left: 15px;
     background-color: black;
-    color: palegoldenrod;
-    margin: 0px;
+    color: rgb(255, 247, 155);
     padding: 0px;
+    text-align: center;
 }
 
 footer {
@@ -110,6 +120,7 @@ footer {
 <script src="http://cdn.leafletjs.com/leaflet-0.7/leaflet.js"></script>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script src="https://d3js.org/topojson.v2.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script  type="text/javascript">
 
 
@@ -158,11 +169,23 @@ function ready(error, route) {
             .attr('class', 'road')
             .attr('stroke', '#2b8cbe')
 
-        // road_feature.transition()
-        //                 .duration(1500)
-        //                 .ease(d3.easePolyInOut)
-        //                 .attr('stroke-dashoffset', 0)
-        //update_counties(filtered_counties);
+        runRace()
+
+            // don't use arrow function in this case because it will bind the windown and not the button
+    // love it
+        // .on('mouseover', function () {
+        //     d3.select(this)
+        //     .style('background-color', 'lightblue')
+        //     .style('color', 'black')
+        // })
+        // .on('mouseout', function () {
+        //     d3.select(this)
+        //     .style('background-color', 'black')
+        //     .style('color', 'white')
+        // });
+                     
+
+        // update_counties(filtered_counties);
 
         map.on("viewreset", reset);
         reset();
@@ -190,8 +213,8 @@ function filter_counties(counties){
                                 var d = app_counties[i];
                                 FIPS.add(d['FIPS'])
                                 }
-            
-            for (i = 0; i < temp_counties.length; i++) { 
+
+            for (i = 0; i < temp_counties.length; i++) {  d
                     var e = temp_counties[i];
                     var id = e.properties.GEOID;
                     if (FIPS.has(id)) {
@@ -214,6 +237,16 @@ function update_counties(filtered_counties){
 
   };
 
+              
+function runRace() {
+            road_feature
+                .attr('stroke-dasharray', 2000)
+                .attr('stroke-dashoffset', 2000)
+                .transition()
+                    .duration(5000)
+                    .attr('stroke-dashoffset', 0)
+            };
+
 function projectPoint(x, y) {
             var point = map.latLngToLayerPoint(new L.LatLng(y, x));
             this.stream.point(point.x, point.y);
@@ -235,8 +268,73 @@ function reset() {
             // road.attr('d', path);
             // feature.attr("d", path);
             road_feature.attr("d", path);
-            //debugger;
     }
+
+    // d3.selectAll('#race')
+    //  .on("click", function() {
+    //      console.log('wtf');
+    //  });
+     
+    //  function () {
+    //      console.log('help wtf');
+    //      road_feature
+    //             .attr('stroke-dasharray', 2000)
+    //             .attr('stroke-dashoffset', 2000)
+    //             .transition()
+    //                 .duration(5000)
+    //                 .attr('stroke-dashoffset', 0)
+    //  });
+
+
+    d3.selectAll('.button')
+     .on("click", function(d) {
+	                d3.selectAll(".button")
+	                  .transition()
+                      .style('background-color', 'black')
+                      .style('color', 'white')
+	                d3.select(this)
+	                  .transition()
+	                  .duration(300)
+                      .style('background-color', 'white')
+	                  .style("color", 'black');
+                      // this actually worked i have to review
+                      // this only workds sometimes so confused. 
+                      console.log(this.id);
+                      if (this.id === 'race') {
+                          runRace()
+                      }
+        });
+
+        $(document).ready(function() {
+
+                var info_panel_object = {
+                'route': ['Downtown to Airport in under 10 minutes',
+                'Cheaper Than Ride Sharing',
+                'No tax payers dollars spent'] ,
+                'race': ['Unlike Yinzers, the loop goes faster in tunnels instead of slowing down'],
+                'share': ["Tell your friends.",
+                        'Tell the mayor.',
+                        'Tell The Boring Company.',
+                        'Tell the mayor.',
+                        'Tell Elon.',
+                        'Tell Everyone!',
+                        'Yinzers want the loop!'] 
+                }
+
+                $('.button').click(function(){
+                    // debugger;
+                    // may want to check for if key exists so i don't hit an error
+                    var panel_text = info_panel_object[this.id]
+                    $('#info-panel').empty()
+                    for (i = 0; i < panel_text.length; i++) {
+                        $('#info-panel').append('<h3>' + panel_text[i] + '</h3>' + '<br>')
+                    }
+
+                });
+        });
+
+
+
 
  
 
@@ -246,21 +344,38 @@ function reset() {
     .defer(d3.json, 'data/pitt_route.json')
     .await(ready);
 </script>
- <h1 id="banner">Pitt Loop</h1>
+<div id='header'>
+    <h1 id="banner">Pitt Loop</h1>
+    <span>Downtown to Airport in under 10 minutes</span>
+</div>
  <hr>
     <div id="container">
         <div id="map"></div>
-        <div>
-            <p>hello world!</p>
+        <div id='info-panel'>
+            <h3>Tell your friends.</h3>
+            <br>
+            <h3>Tell the mayor.</h3>
+            <br>
+            <h3>Tell The Boring Company.</h3>
+            <br>
+            <h3>Tell Elon.</h3>
+            <br>
+            <h3>Tell Everyone!</h3>
+            <br>
+            <h3>Yinzers want the loop!</h3>
         </div>
         <link 
             rel="stylesheet" 
             href="http://cdn.leafletjs.com/leaflet-0.7/leaflet.css"
         />
     </div>
-    <div class="buttons">
-        <button class="button button4">Route</button>
-        <button class="button button4">Race</button>
-        <button class="button button4">Contact</button>
+    <div>
+        <div class="buttons">
+            <button id='route' class="button"> Route
+            </button>
+            <button id='race' class="button">Race</button>
+            <button id='share' class="button">Share</button>
+        </div>
+        <div class="scratch"></div>
     </div>
 <footer></footer>
