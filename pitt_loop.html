@@ -114,6 +114,12 @@ footer {
     background-color: black;
 }
 
+#video-div {
+    display: flex;
+    margin-top: 100px;
+    justify-content: center;
+}
+
 
 </style>
 
@@ -308,15 +314,15 @@ function reset() {
         $(document).ready(function() {
 
                 var info_panel_object = {
-                'route': ['Downtown to Airport in under 10 minutes',
-                'Cheaper Than Ride Sharing',
-                'No tax payers dollars spent'] ,
-                'race': ['Unlike Yinzers, the loop goes faster in tunnels instead of slowing down'],
-                'share': ["Tell your friends.",
-                        'Tell the mayor.',
-                        'Tell The Boring Company.',
-                        'Tell the mayor.',
-                        'Tell Elon.',
+                'route': ['Cheaper than Ride Sharing',
+                'No tax payers dollars spent',
+                'Downtown to Airport in under 10 minutes',
+                'Direct to Terminal',
+                'Investing in our Future',
+                'All built on public right of way',
+                ] ,
+                'race': [],
+                'share': ["Tell your friends, Bill Peduto, Elon, and The Boring Company",
                         'Tell Everyone!',
                         'Yinzers want the loop!'] 
                 }
@@ -325,9 +331,15 @@ function reset() {
                     // debugger;
                     // may want to check for if key exists so i don't hit an error
                     var panel_text = info_panel_object[this.id]
+         
                     $('#info-panel').empty()
                     for (i = 0; i < panel_text.length; i++) {
                         $('#info-panel').append('<h3>' + panel_text[i] + '</h3>' + '<br>')
+                    }
+
+                    if (this.id === 'race') {
+                        $('#info-panel').append('<img id="skate" src="images/airport_skate.jpg" /> <br>')
+                        $('#info-panel').append('<img id="station" src="images/loop_station.jpg" />')
                     }
 
                 });
@@ -352,17 +364,8 @@ function reset() {
     <div id="container">
         <div id="map"></div>
         <div id='info-panel'>
-            <h3>Tell your friends.</h3>
-            <br>
-            <h3>Tell the mayor.</h3>
-            <br>
-            <h3>Tell The Boring Company.</h3>
-            <br>
-            <h3>Tell Elon.</h3>
-            <br>
-            <h3>Tell Everyone!</h3>
-            <br>
-            <h3>Yinzers want the loop!</h3>
+            <img id="skate" src="images/airport_skate.jpg"/> <br>
+            <img id="station" src="images/loop_station.jpg"/>
         </div>
         <link 
             rel="stylesheet" 
@@ -371,11 +374,14 @@ function reset() {
     </div>
     <div>
         <div class="buttons">
-            <button id='route' class="button"> Route
-            </button>
             <button id='race' class="button">Race</button>
+            <button id='route' class="button"> Route </button>
             <button id='share' class="button">Share</button>
+            <button id='boring' class="button">The <br> Boring Company</button>
         </div>
-        <div class="scratch"></div>
+        <div id='video-div'>
+        <iframe id='video' width="1280" height="720" src="https://www.youtube.com/embed/tfV8z2JY_bI">
+        </div>
+        </iframe>
     </div>
 <footer></footer>
